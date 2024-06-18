@@ -16,7 +16,13 @@ jobs:
       - name: Log in to Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: >
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            }
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -28,9 +34,3 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./terraform
-
-      - name: Get ACR credentials
-        id: acr-creds
-        run: |
-          ACR_PASSWORD=$(az acr credential show --name palonsoacr --query "passwords[0].value" -o tsv)
-          echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
