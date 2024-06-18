@@ -209,3 +209,21 @@ az disk delete --resource-group RG-PALONSO-DVFINLAB --name db-vm-osdisk --yes
 Diagram:
 
 ![githubActions](https://github.com/stemdo-labs/final-project-palonso/assets/166375061/2ee1b212-33a0-46a1-818b-21c5ba6be552)
+En el fichero ci-infra haremos un init y un terraform plan si se ejecuta correctamente se ejecutará el cd-infra y así con todos los workflows
+en el cd-infra haremos el terraform apply
+en el ci obtendremos la version del composer y tambien la password del acr creado en cd_infra. Taggearemos la imagen con la etiqueta latest y la etiqueta del composer , para poder referenciar la última como latest.
+subiremos las imágenes al acr 
+Después se ejecutará el cd ejecutaremos el deploy y service de AKS
+Después de esto tendremos un workflow manual para las vms de ansible.
+Haremos que la vm_back up sea self hosted :
+
+![image](https://github.com/stemdo-labs/final-project-palonso/assets/166375061/6863d49c-aaae-4b64-b7bd-379c6d962ed2)
+en ese playbook se pasa la variable que sube la copia de backup al storage account para que desde el playbook de ansible se pueda utilizar.
+y haré el sembrado de la base de datos manualmente.
+
+# Disaster recovery
+
+El objetivo del proceso de disaster recovery es restaurar la base de datos MySQL desde el último respaldo almacenado en Azure Blob Storage. Este procedimiento es crucial para garantizar la continuidad del servicio en caso de una falla catastrófica.
+El workflow de GitHub Actions se ejecuta manualmente mediante workflow_dispatch. Consta de varios pasos que incluyen la descarga del último respaldo de la base de datos, la transferencia del archivo de respaldo a una máquina virtual específica y la restauración de la base de datos utilizando MySQL.
+
+![disastr_recovery](https://github.com/stemdo-labs/final-project-palonso/assets/166375061/dda4e454-bdee-4ebf-8fe7-f943204646fe)
