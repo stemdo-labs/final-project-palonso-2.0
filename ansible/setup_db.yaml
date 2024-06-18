@@ -1,0 +1,72 @@
+---
+- hosts: database
+  become: yes
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install MySQL server
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: Install Python and pip
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - python
+        - python-pip
+
+    - name: Install MySQL development libraries
+      apt:
+        name: libmysqlclient-dev
+        state: present
+
+    - name: Install MySQL-python module
+      pip:
+        name: MySQL-python
+
+    - name: Install PHP and dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - php
+        - php-mysql
+        - apache2
+        - libapache2-mod-php
+        - php-mbstring
+        - php-gettext
+
+    - name: Download and install PHPMyAdmin
+      apt:
+        name: phpmyadmin
+        state: present
+
+    - name: Enable MySQL service
+      systemd:
+        name: mysql
+        enabled: yes
+        state: started
+
+    - name: Enable Apache2 service
+      systemd:
+        name: apache2
+        enabled: yes
+        state: started
+
+    - name: Setup MySQL root password and create database
+      mysql_user:
+        name: pilar
+        password: 'pilar'
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        host_all: yes
+        state: present
+
+    - name: Create MySQL database
+      mysql_db:
+        name: concierto
+        state: present
