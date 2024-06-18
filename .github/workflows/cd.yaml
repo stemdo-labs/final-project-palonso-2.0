@@ -5,6 +5,8 @@ on:
     workflows: ["CI for Application"]
     types:
       - completed
+    branches:
+      - 'prod'
 
 jobs:
   deploy-to-aks:
