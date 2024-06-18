@@ -1,0 +1,41 @@
+name: Disaster recovery
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  restore-database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Download Latest Backup from Azure Storage
+        run: |
+          latest_backup=$(az storage blob list --account-name stapalonsodvfinlab --container-name tfstate --query "[?ends_with(name, '.sql')].[name]" --output tsv | sort | tail -n1)
+          az storage blob download --account-name stapalonsodvfinlab --container-name tfstate --name "$latest_backup" --file "./$latest_backup"
+
+      - name: Identify Latest Backup File
+        run: |
+          latest_backup=$(ls -t | grep 'concierto_backup' | head -n1)
+          echo "Latest backup file is: $latest_backup"
+          echo "latest_backup=$latest_backup" >> $GITHUB_ENV
+
+      - name: Transfer Backup to VM
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "./$latest_backup" adminuser@52.174.32.157:/var/backups/
+
+      - name: Restore Database
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa adminuser@52.174.32.157 "mysql -u pilar -pilar concierto < /var/backups/$latest_backup"
