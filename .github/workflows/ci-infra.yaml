@@ -1,0 +1,35 @@
+name: CI for Infrastructure
+
+on:
+  push:
+    branches:
+      - iac
+
+jobs:
+  terraform-plan-and-acr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./terraform
+
+      - name: Get ACR credentials
+        id: acr-creds
+        run: |
+          echo "password=$(az acr credential show --name palonsoacr --query 'passwords[0].value' -o tsv)" >> $GITHUB_ENV
+
+      - name: Set ACR credentials as GitHub Secrets
+        uses: kbrashears5/action-configure-secrets@v1
+        with:
+          secret: ACR_PASSWORD=${{ env.password }}

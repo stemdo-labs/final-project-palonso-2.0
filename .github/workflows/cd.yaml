@@ -1,0 +1,23 @@
+name: CD for Application
+
+on:
+  workflow_run:
+    workflows: ["CI for Application"]
+    types:
+      - completed
+
+jobs:
+  deploy-to-aks:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: 'latest'
+
+      - name: Deploy to AKS
+        run: kubectl apply -f kubernetes/
