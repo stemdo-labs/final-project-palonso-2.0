@@ -33,7 +33,7 @@ jobs:
         working-directory: ./terraform
 
       - name: Terraform Force Unlock
-        run: terraform force-unlock b71ae3d7-fde9-3ba3-9c54-569846e4353f || true
+        run: terraform force-unlock -force b71ae3d7-fde9-3ba3-9c54-569846e4353f || true
         working-directory: ./terraform
 
       - name: Terraform Plan
