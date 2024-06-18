@@ -1,0 +1,33 @@
+name: CD for Infrastructure
+
+on:
+  workflow_run:
+    workflows: ["CI for Infrastructure"]
+    types:
+      - completed
+    branches:
+      - 'iac-palonso'
+
+jobs:
+  apply-infra:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set Azure environment variables
+        run: |
+          echo "ARM_CLIENT_ID=${{ secrets.CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.TENANT_ID }}" >> $GITHUB_ENV
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./terraform
