@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-concert-app-service
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 104.46.58.141
+  selector:
+    app: my-concert-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
