@@ -3,7 +3,7 @@ name: CI for Infrastructure
 on:
   push:
     branches:
-      - iac-palonso
+      - iac
 
 jobs:
   terraform-plan-and-acr:
@@ -27,9 +27,12 @@ jobs:
       - name: Get ACR credentials
         id: acr-creds
         run: |
-          echo "password=$(az acr credential show --name palonsoacr --query 'passwords[0].value' -o tsv)" >> $GITHUB_ENV
+          ACR_PASSWORD=$(az acr credential show --name palonsoacr --query "passwords[0].value" -o tsv)
+          echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
 
       - name: Set ACR credentials as GitHub Secrets
-        uses: kbrashears5/action-configure-secrets@v1
-        with:
-          secret: ACR_PASSWORD=${{ env.password }}
+        run: |
+          echo "::add-mask::${{ env.ACR_PASSWORD }}"
+          echo "${{ env.ACR_PASSWORD }}" > /tmp/acr_password
+        env:
+          ACR_PASSWORD: ${{ env.ACR_PASSWORD }}
