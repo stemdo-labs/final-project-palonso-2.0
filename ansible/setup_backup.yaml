@@ -1,0 +1,47 @@
+---
+- name: Backup MySQL Database and Upload to Azure
+  hosts: backup
+  become: yes
+  tasks:
+    - name: Ensure MySQL client is installed on the backup VM
+      apt:
+        name: mysql-client
+        state: present
+
+    - name: Backup MySQL database on the database VM from the backup VM
+      shell: mysqldump -u pilar -p'pilar' -h 10.0.2.4 concierto > /tmp/concierto_backup.sql
+
+    - name: Install dependencies for Azure CLI on the backup VM
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - apt-transport-https
+          - lsb-release
+          - gnupg
+        state: present
+
+    - name: Add Microsoft GPG key on the backup VM
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+
+    - name: Add Microsoft repository on the backup VM
+      shell: |
+        echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+
+    - name: Update apt cache on the backup VM
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Azure CLI on the backup VM
+      apt:
+        name: azure-cli
+        state: present
+
+    - name: Upload backup to Azure Storage
+      shell: |
+        az storage blob upload --account-name stapalonsodvfinlab --account-key ${{ azure_storage_key }} --container-name tfstate --name concierto_backup.sql --file /tmp/concierto_backup.sql
+      environment:
+        azure_storage_key: "{{ azure_storage_key }}"

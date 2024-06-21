@@ -1,0 +1,10 @@
+{
+    "name": "stemdo-labs/my-concert-app",
+    "description": "An application to manage concert tickets and more.",
+    "version": "1.0.0",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}

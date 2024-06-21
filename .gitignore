@@ -1,0 +1,24 @@
+# Local .terraform directories
+**/terraform/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+.dockerconfigjson
+# Crash log files
+crash.log
+
+
+
+# Ignore override files as they are usually used to override resources locally and should not be shared
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Include terraform plan output files
+*.tfplan
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc

@@ -1,0 +1,50 @@
+name: CI for Application
+
+on:
+  workflow_run:
+    workflows: ["CD for Infrastructure"]
+    types:
+      - completed
+    branches:
+      - 'dev'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Get version from composer.json
+        id: get_version
+        run: |
+          VERSION=$(jq -r '.version' composer.json)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get ACR Password
+        id: get_acr_password
+        run: |
+          ACR_PASSWORD=$(az acr credential show --name palonsoACR --query "passwords[0].value" --output tsv)
+          echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
+
+      - name: Log in to ACR
+        run: echo "${{ env.ACR_PASSWORD }}" | docker login palonsoacr.azurecr.io -u "${{ secrets.ACR_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t palonsoacr.azurecr.io/my-concert-app:${{ env.VERSION }} -t palonsoacr.azurecr.io/my-concert-app:latest .
+        working-directory: .
+
+      - name: Push Docker image
+        run: |
+          docker push palonsoacr.azurecr.io/my-concert-app:${{ env.VERSION }}
+          docker push palonsoacr.azurecr.io/my-concert-app:latest
