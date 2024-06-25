@@ -21,9 +21,8 @@ jobs:
         env:
           AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa adminuser@52.174.32.157 'ansible-playbook -i inventory.ini setup_backup.yaml -e "azure_storage_key=${AZURE_STORAGE_KEY}"'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa adminuser@20.234.175.246 'ansible-playbook -i inventory.ini setup_backup.yaml -e "azure_storage_key=${AZURE_STORAGE_KEY}"'
 
       - name: Run Setup DB Playbook
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa adminuser@52.174.32.157 'ansible-playbook -i inventory.ini setup_db.yaml'
-
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa adminuser@20.234.175.246 'ansible-playbook -i inventory.ini setup_db.yaml'
