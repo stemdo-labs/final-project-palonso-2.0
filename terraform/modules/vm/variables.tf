@@ -4,17 +4,17 @@ variable "name" {
 }
 
 variable "location" {
-  description = "The location of the VM"
+  description = "The Azure region where resources will be deployed"
   type        = string
 }
 
 variable "resource_group_name" {
-  description = "The resource group name of the VM"
+  description = "The name of the resource group"
   type        = string
 }
 
 variable "subnet_id" {
-  description = "The subnet ID for the VM"
+  description = "The ID of the subnet"
   type        = string
 }
 
@@ -24,12 +24,12 @@ variable "vm_size" {
 }
 
 variable "nsg_id" {
-  description = "The ID of the NSG to associate with the NIC"
+  description = "The ID of the network security group"
   type        = string
 }
 
 variable "public_ip" {
-  description = "Whether to assign a public IP"
+  description = "Boolean to create a public IP"
   type        = bool
   default     = false
 }
