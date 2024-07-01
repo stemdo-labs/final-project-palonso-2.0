@@ -1,6 +1,6 @@
 variable "location" {
   description = "The Azure region where resources will be deployed"
-  default     = "westeurope"
+  default     = "uksouth"
 }
 
 variable "resource_group_name" {
@@ -13,19 +13,19 @@ variable "vnet_name" {
   default     = "vnet-common-bootcamp"
 }
 
-variable "vnet_cidr" {
-  description = "The CIDR block for the virtual network"
-  default     = "10.0.0.0/16"
+variable "vnet_resource_group_name" {
+  description = "The name of the resource group where the virtual network is located"
+  default     = "final-project-common"
 }
 
-variable "subnet_name" {
-  description = "The name of the subnet"
+variable "db_subnet_name" {
+  description = "The name of the subnet for the database VM"
   default     = "sn-palonso"
 }
 
-variable "subnet_cidr" {
-  description = "The CIDR block for the subnet"
-  default     = "10.0.26.0/24"
+variable "backup_subnet_name" {
+  description = "The name of the subnet for the backup VM"
+  default     = "sn-palonso"
 }
 
 variable "db_vm_name" {
@@ -50,10 +50,10 @@ variable "backup_vm_size" {
 
 variable "public_ip" {
   description = "Boolean to create a public IP"
-  default     = false
+  default     = true
 }
 
-variable "nsg_id" {
-  description = "The ID of the network security group"
-  default     = null
+variable "nsg_name" {
+  description = "The name of the network security group"
+  default     = "default-nsg"
 }

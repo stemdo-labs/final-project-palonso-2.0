@@ -8,8 +8,8 @@ terraform {
   }
 
   backend "azurerm" {
-    resource_group_name   = "rg-palonso-dvfinlab"
-    storage_account_name  = "stapalonsodvfinlab"
+    resource_group_name   = "rg-palonso"
+    storage_account_name  = "stapalonso"
     container_name        = "tfstate"
     key                   = "terraform.tfstate"
   }

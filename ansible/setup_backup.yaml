@@ -42,6 +42,6 @@
 
     - name: Upload backup to Azure Storage
       shell: |
-        az storage blob upload --account-name stapalonsodvfinlab --account-key ${{ azure_storage_key }} --container-name tfstate --name concierto_backup.sql --file /tmp/concierto_backup.sql
+        az storage blob upload --account-name stapalonso --account-key ${{ azure_storage_key }} --container-name tfstate --name concierto_backup.sql --file /tmp/concierto_backup.sql
       environment:
         azure_storage_key: "{{ azure_storage_key }}"
